@@ -64,7 +64,7 @@ fn HomePage(cx: Scope) -> impl IntoView {
     };
 
     view! { cx,
-        <div class="h-screen w-full flex flex-col justify-center items-center pointer text-slate-50" on:click=on_click>
+        <div class="h-screen w-full flex flex-col justify-center items-center pointer text-slate-50 bg-black" on:click=on_click>
             {move || if loading.get() {
                 view! { cx, <p>"Loading..."</p> }
             } else {
