@@ -36,7 +36,7 @@ pub fn App(cx: Scope) -> impl IntoView {
 #[component]
 fn HomePage(cx: Scope) -> impl IntoView {
     // Creates a reactive value to update the button
-    let (chore, set_chore) = create_signal::<String>(cx, "".to_string());
+    let (chore, set_chore) = create_signal::<Option<String>>(cx, None);
     let chores = vec![
         "main floor",
         "floor under desk",
@@ -58,18 +58,21 @@ fn HomePage(cx: Scope) -> impl IntoView {
         let random_number = wasm_rng().gen_range(0, cloned_chores.borrow().len());
         let binding = cloned_chores.borrow();
         let random_chore = binding.get(random_number);
-        set_chore.set(random_chore.map(|s| s.to_string()).unwrap_or_default());
+        set_chore.set(random_chore.map(|s| s.to_string()));
 
         set_timeout(move || set_loading.set(false), Duration::from_millis(200))
     };
 
     view! { cx,
-        <h1>"Chore Thingy"</h1>
-        <button on:click=on_click>"Click me"</button>
-        {move || if loading.get() {
-            view! { cx, <p>"Loading..."</p> }
-        } else {
-            view! { cx, <p>"Your chore is: "{chore.get()}</p> }
-        }}
+        <div class="h-screen w-full flex flex-col justify-center items-center pointer text-slate-50" on:click=on_click>
+            {move || if loading.get() {
+                view! { cx, <p>"Loading..."</p> }
+            } else {
+                match chore.get() {
+                    Some(chore) => view! { cx, <p class="text-9xl font-bold">{chore}</p> },
+                    None => view! { cx, <p>"Click anywhere to get a chore!"</p> },
+                }
+            }}
+        </div>
     }
 }
